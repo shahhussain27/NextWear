@@ -7,7 +7,7 @@ const ProductProvider = ({ children }) => {
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/getProducts`, {
+      const response = await fetch(`https://next-wear.vercel.app/api/getProducts`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
