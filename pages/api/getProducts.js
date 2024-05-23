@@ -1,7 +1,20 @@
-import Products from "@/models/Products";
-import connectDB from "@/middleware/mongoose";
+import Cors from 'cors';
+import initMiddleware from '@/middleware/init-middleware';
+import Products from '@/models/Products';
+import connectDB from '@/middleware/mongoose';
+
+// Initialize the CORS middleware
+const cors = initMiddleware(
+  Cors({
+    methods: ['GET', 'POST', 'OPTIONS'],
+    origin: '*', // Adjust the origin as needed for your use case
+  })
+);
 
 const handler = async (req, res) => {
+  // Run the CORS middleware
+  await cors(req, res);
+
   try {
     let products = await Products.find({ category: "tshirt" });
     let tshirts = {};
