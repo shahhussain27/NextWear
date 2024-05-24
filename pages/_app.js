@@ -4,10 +4,17 @@ import Navbar from "@/components/Navbar";
 import "@/styles/globals.css";
 import { useEffect, useState } from "react";
 import { ProductProvider } from "@/context/ProductContext";
+import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App({ Component, pageProps }) {
   const [cart, setCart] = useState({});
   const [subTotal, setSubTotal] = useState(0);
+  const router = useRouter();
+  const [user, setUser] = useState({ value: null });
+  const [key, setKey] = useState(0);
+  const notify = (msg) => toast.success(msg);
 
   useEffect(() => {
     try {
@@ -18,7 +25,12 @@ export default function App({ Component, pageProps }) {
       console.error(error);
       localStorage.clear();
     }
-  }, []);
+    const token = localStorage.getItem("token");
+    if (token) {
+      setUser({ value: token });
+      setKey(Math.random());
+    }
+  }, [router.query]);
 
   const saveCart = (setCart) => {
     localStorage.setItem("cart", JSON.stringify(setCart));
@@ -30,17 +42,18 @@ export default function App({ Component, pageProps }) {
     setSubTotal(subt);
   };
 
-  const addToCart = (itemCode, qty, price, name, size, variant,img) => {
+  const addToCart = (itemCode, qty, price, name, size, variant, img) => {
     // console.log(qty);
     let newCart = cart;
     if (itemCode in cart) {
       newCart[itemCode].qty = cart[itemCode].qty + 1;
     } else {
-      newCart[itemCode] = { qty: 1, price, name, size, variant,img };
+      newCart[itemCode] = { qty: 1, price, name, size, variant, img };
     }
     setCart(newCart);
     // console.log(newCart)
     saveCart(newCart);
+    notify(`${name} is added into your cart`);
   };
 
   const removeFromCart = (itemCode, qty) => {
@@ -59,10 +72,27 @@ export default function App({ Component, pageProps }) {
     setCart({});
     saveCart({});
   };
+
+  const buyNow = (itemCode, qty, price, name, size, variant, img) => {
+    let newCart = { itemCode: { qty: 1, price, name, size, variant, img } };
+    setCart(newCart);
+    saveCart(newCart);
+    router.push("/checkout");
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser({ value: null });
+    setKey(0);
+    router.push("/login");
+  };
   return (
     <>
       <ProductProvider>
         <Navbar
+          user={user}
+          key={key}
+          logout={logout}
           cart={cart}
           addToCart={addToCart}
           removeFromCart={removeFromCart}
@@ -75,10 +105,16 @@ export default function App({ Component, pageProps }) {
           removeFromCart={removeFromCart}
           clearCart={clearCart}
           subTotal={subTotal}
+          buyNow={buyNow}
           {...pageProps}
         />
         <Contents />
         <Footer />
+        <ToastContainer
+          position="bottom-right"
+          hideProgressBar={true}
+          closeOnClick
+        />
       </ProductProvider>
     </>
   );

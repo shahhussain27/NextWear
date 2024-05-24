@@ -1,25 +1,50 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import { CiShoppingCart } from "react-icons/ci";
-import { IoIosCloseCircleOutline } from "react-icons/io";
+import { CiShoppingCart, CiUser } from "react-icons/ci";
+import { IoIosCloseCircleOutline, IoIosLogOut } from "react-icons/io";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import logo from "../public/logo.png";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@nextui-org/dropdown";
 
-const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
+const Navbar = ({
+  cart,
+  addToCart,
+  removeFromCart,
+  clearCart,
+  subTotal,
+  user,
+  key,
+  logout,
+}) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
+
+  // console.log(user.value)
 
   // console.log(cart)
 
   return (
     <header className="text-gray-600 body-font shadow-xl sticky top-0 bg-white z-10">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        <Link href={"/"} className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
-          <Image src={logo} height={60} width={60} className="w-15 h-15 text-white" />
+        <Link
+          href={"/"}
+          className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
+        >
+          <Image
+            src={logo}
+            height={60}
+            width={60}
+            className="w-15 h-15 text-white"
+          />
           <span className="ml-3 text-xl">NextWear</span>
         </Link>
         <nav className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base text-black justify-center gap-4">
@@ -28,37 +53,82 @@ const Navbar = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
           <Link href={"/stickers"}>Stickers</Link>
           <Link href={"/mugs"}>Mugs</Link>
         </nav>
-        <div
-          className="text-black text-4xl md:mt-0 mt-4 mr-4 cursor-pointer relative"
-          onClick={toggleDrawer}
-        >
-          <CiShoppingCart />
-          {Object.keys(cart).length !== 0 && (
-            <span className="absolute top-0 right-0 h-5 w-5 bg-red-600 rounded-full flex items-center justify-center text-white text-xs">
-              {Object.keys(cart).length}
-            </span>
-          )}
-        </div>
+        {user.value && (
+          <div className="flex">
+            <Dropdown>
+              <DropdownTrigger>
+                <button
+                  className="text-black text-3xl md:mt-0 mt-4 mr-4 "
+                  variant="bordered"
+                >
+                  <CiUser />
+                </button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Static Actions"
+                className="bg-white border-1 border-gray-400 shadow-md rounded-md w-40 py-1 px-2 text-"
+              >
+                <DropdownItem
+                  className="hover:bg-gray-100 rounded-md"
+                  showDivider
+                  startContent={<CiUser />}
+                >
+                  Profile
+                </DropdownItem>
+                <DropdownItem
+                  className="hover:bg-gray-100 rounded-md"
+                  showDivider
+                  startContent={<CiShoppingCart />}
+                >
+                  Orders
+                </DropdownItem>
+                <DropdownItem
+                  key="delete"
+                  className="hover:bg-rose-600 hover:text-white rounded-md"
+                  color="danger"
+                  showDivider
+                  onClick={logout}
+                  startContent={<IoIosLogOut />}
+                >
+                  Logout
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <div
+              className="text-black text-4xl md:mt-0 mt-4 mr-4 cursor-pointer relative"
+              onClick={toggleDrawer}
+            >
+              <CiShoppingCart />
+              {Object.keys(cart).length !== 0 && (
+                <span className=" absolute top-0 right-0 h-5 w-5 bg-red-600 rounded-full flex items-center justify-center text-white text-xs">
+                  {Object.keys(cart).length}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
-        <div className="flex gap-2 md:mt-0 mt-4 cursor-pointer relative">
-          <Link href={"/login"}>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-md">
-              Login
-            </button>
-          </Link>
-          <Link href={"/signup"}>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-md">
-              Sign Up
-            </button>
-          </Link>
-        </div>
+        {!user.value && (
+          <div className="flex gap-2 md:mt-0 mt-4 cursor-pointer relative">
+            <Link href={"/login"}>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-md">
+                Login
+              </button>
+            </Link>
+            <Link href={"/signup"}>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-md">
+                Sign Up
+              </button>
+            </Link>
+          </div>
+        )}
 
         <Drawer
           open={isOpen}
           onClose={toggleDrawer}
           direction="right"
           size={400}
-          className="p-4 text-black"
+          className="p-4 text-black overflow-y-scroll"
         >
           <>
             <div className="flex justify-between mb-4">
