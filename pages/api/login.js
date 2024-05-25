@@ -8,7 +8,10 @@ const handler = async (req, res) => {
     try {
       let user = await User.findOne({ email: req.body.email });
       if (user) {
-        const bytes = CryptoJS.AES.decrypt(user.password, "admin");
+        const bytes = CryptoJS.AES.decrypt(
+          user.password,
+          process.env.JWT_SECRET
+        );
         let decryptedPassword = bytes.toString(CryptoJS.enc.Utf8);
 
         if (req.body.password === decryptedPassword) {
@@ -18,11 +21,10 @@ const handler = async (req, res) => {
               email: user.email,
               username: user.username,
             },
-            "admin"
+            process.env.JWT_SECRET
           );
           // console.log({token})
-          res.status(200).json({token});
-
+          res.status(200).json({ token });
         } else {
           res
             .status(401)

@@ -7,14 +7,14 @@ import mongoose from "mongoose";
 export default function Page({ addToCart, product, variants, buyNow }) {
   // console.log(product, variants )
   const [pin, setPin] = useState();
-  const [service, setService] = useState();
+  const [service, setService] = useState('');
   const [color, setColor] = useState(product.color);
   const [size, setSize] = useState(product.size);
 
   const router = useRouter();
 
   const checkServiceability = async () => {
-    let pins = await fetch("http://localhost:3000/api/pincode");
+    let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
     let pinjson = await pins.json();
     if (pinjson.includes(parseInt(pin))) {
       setService(true);
@@ -28,7 +28,7 @@ export default function Page({ addToCart, product, variants, buyNow }) {
   };
 
   const refreshVariant = (newSize, newColor) => {
-    let url = `http://localhost:3000/product/${variants[newColor][newSize]["slug"]}`;
+    let url = `${process.env.NEXT_PUBLIC_HOST}/product/${variants[newColor][newSize]["slug"]}`;
     window.location = url;
   };
 
@@ -57,8 +57,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <svg
                   fill="currentColor"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   stroke-width="2"
                   className="w-4 h-4 text-indigo-500"
                   viewBox="0 0 24 24"
@@ -68,8 +68,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <svg
                   fill="currentColor"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   stroke-width="2"
                   className="w-4 h-4 text-indigo-500"
                   viewBox="0 0 24 24"
@@ -79,8 +79,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <svg
                   fill="currentColor"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   stroke-width="2"
                   className="w-4 h-4 text-indigo-500"
                   viewBox="0 0 24 24"
@@ -90,8 +90,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <svg
                   fill="currentColor"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   stroke-width="2"
                   className="w-4 h-4 text-indigo-500"
                   viewBox="0 0 24 24"
@@ -101,8 +101,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <svg
                   fill="none"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   stroke-width="2"
                   className="w-4 h-4 text-indigo-500"
                   viewBox="0 0 24 24"
@@ -115,8 +115,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <a className="text-gray-500">
                   <svg
                     fill="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     stroke-width="2"
                     className="w-5 h-5"
                     viewBox="0 0 24 24"
@@ -127,8 +127,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <a className="text-gray-500">
                   <svg
                     fill="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     stroke-width="2"
                     className="w-5 h-5"
                     viewBox="0 0 24 24"
@@ -139,8 +139,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                 <a className="text-gray-500">
                   <svg
                     fill="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     stroke-width="2"
                     className="w-5 h-5"
                     viewBox="0 0 24 24"
@@ -240,8 +240,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                     <svg
                       fill="none"
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       stroke-width="2"
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
@@ -324,8 +324,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
               <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
                 <svg
                   fill="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   stroke-width="2"
                   className="w-5 h-5"
                   viewBox="0 0 24 24"

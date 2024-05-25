@@ -18,7 +18,7 @@ const ProductProvider = ({ children }) => {
 
   const signup = async (username, email, password) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/signup`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const ProductProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +77,7 @@ const ProductProvider = ({ children }) => {
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/getProducts`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getProducts`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

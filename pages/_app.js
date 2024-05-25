@@ -7,6 +7,7 @@ import { ProductProvider } from "@/context/ProductContext";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LoadingBar from "react-top-loading-bar";
 
 export default function App({ Component, pageProps }) {
   const [cart, setCart] = useState({});
@@ -14,9 +15,17 @@ export default function App({ Component, pageProps }) {
   const router = useRouter();
   const [user, setUser] = useState({ value: null });
   const [key, setKey] = useState(0);
+  const [progress, setProgress] = useState(0);
   const notify = (msg) => toast.success(msg);
 
   useEffect(() => {
+    router.events.on("routeChangeStart", () => {
+      setProgress(40);
+    });
+    router.events.on("routeChangeComplete", () => {
+      setProgress(100);
+    });
+
     try {
       if (localStorage.getItem("cart")) {
         setCart(JSON.parse(localStorage.getItem("cart")));
@@ -83,22 +92,31 @@ export default function App({ Component, pageProps }) {
   const logout = () => {
     localStorage.removeItem("token");
     setUser({ value: null });
-    setKey(0);
+    setKey(Math.random());
     router.push("/login");
   };
   return (
     <>
       <ProductProvider>
-        <Navbar
-          user={user}
-          key={key}
-          logout={logout}
-          cart={cart}
-          addToCart={addToCart}
-          removeFromCart={removeFromCart}
-          clearCart={clearCart}
-          subTotal={subTotal}
+        <LoadingBar
+          color="#f11946"
+          progress={progress}
+          onLoaderFinished={() => setProgress(0)}
+          waitingTime={500}
         />
+        {key && (
+          <Navbar
+            user={user}
+            key={key}
+            logout={logout}
+            cart={cart}
+            addToCart={addToCart}
+            removeFromCart={removeFromCart}
+            clearCart={clearCart}
+            subTotal={subTotal}
+          />
+        )}
+
         <Component
           cart={cart}
           addToCart={addToCart}

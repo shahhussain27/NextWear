@@ -3,13 +3,10 @@ const { Schema } = mongoose;
 
 const OrderSchema = new Schema(
   {
-    userId: { type: String, require: true },
-    products: [
-      {
-        productId: { type: String },
-        quantity: { type: Number, default: 1 },
-      },
-    ],
+    email: { type: String, require: true },
+    orderId: { type: String, require: true },
+    paymentInfo: { type: String, default: "" },
+    products: {type: Object, require: true},
     address: { type: String, require: true },
     amount: { type: Number, require: true },
     status: { type: String, default: "pending", require: true },

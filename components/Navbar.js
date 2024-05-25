@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { CiShoppingCart, CiUser } from "react-icons/ci";
 import { IoIosCloseCircleOutline, IoIosLogOut } from "react-icons/io";
 import Drawer from "react-modern-drawer";
@@ -28,6 +29,8 @@ const Navbar = ({
     setIsOpen((prevState) => !prevState);
   };
 
+  const router = useRouter();
+
   // console.log(user.value)
 
   // console.log(cart)
@@ -41,6 +44,7 @@ const Navbar = ({
         >
           <Image
             src={logo}
+            alt="logo"
             height={60}
             width={60}
             className="w-15 h-15 text-white"
@@ -72,6 +76,9 @@ const Navbar = ({
                   className="hover:bg-gray-100 rounded-md"
                   showDivider
                   startContent={<CiUser />}
+                  onClick={() => {
+                    router.push("/profile");
+                  }}
                 >
                   Profile
                 </DropdownItem>
@@ -79,6 +86,9 @@ const Navbar = ({
                   className="hover:bg-gray-100 rounded-md"
                   showDivider
                   startContent={<CiShoppingCart />}
+                  onClick={() => {
+                    router.push("/orders");
+                  }}
                 >
                   Orders
                 </DropdownItem>
