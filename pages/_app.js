@@ -83,7 +83,8 @@ export default function App({ Component, pageProps }) {
   };
 
   const buyNow = (itemCode, qty, price, name, size, variant, img) => {
-    let newCart = { itemCode: { qty: 1, price, name, size, variant, img } };
+    let newCart = {};
+    newCart[itemCode] = { qty: 1, price, name, size, variant, img };
     setCart(newCart);
     saveCart(newCart);
     router.push("/checkout");
@@ -91,6 +92,7 @@ export default function App({ Component, pageProps }) {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser({ value: null });
     setKey(Math.random());
     router.push("/login");
@@ -124,6 +126,7 @@ export default function App({ Component, pageProps }) {
           clearCart={clearCart}
           subTotal={subTotal}
           buyNow={buyNow}
+          user={user}
           {...pageProps}
         />
         <Contents />

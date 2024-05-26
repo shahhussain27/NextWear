@@ -16,7 +16,7 @@ export default function Page({ addToCart, product, variants, buyNow }) {
   const checkServiceability = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
     let pinjson = await pins.json();
-    if (pinjson.includes(parseInt(pin))) {
+    if (Object.keys(pinjson).includes(pin)) {
       setService(true);
     } else {
       setService(false);

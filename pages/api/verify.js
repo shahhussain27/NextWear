@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import Order from "@/models/Order";
+import Products from "@/models/Products";
 import connectDB from "@/middleware/mongoose";
 
 const generatedSignature = (razorpayOrderId, razorpayPaymentId) => {
@@ -20,12 +21,12 @@ const handler = async (req, res) => {
   if (req.method == "POST") {
     const { orderCreationId, razorpayPaymentId, razorpaySignature } = req.body;
 
-    // console.log(orderCreationId)
+    let order;
 
     const signature = generatedSignature(orderCreationId, razorpayPaymentId);
 
     if (signature !== razorpaySignature) {
-      let order = await Order.findOneAndUpdate(
+      order = await Order.findOneAndUpdate(
         { orderId: orderCreationId },
         { status: "Fail", paymentInfo: orderCreationId }
       );
@@ -33,11 +34,18 @@ const handler = async (req, res) => {
         .status(400)
         .json({ message: "payment verification failed", isOk: false });
     }
-    let order = await Order.findOneAndUpdate(
+    order = await Order.findOneAndUpdate(
       { orderId: orderCreationId },
       { status: "Paid", paymentInfo: JSON.stringify(req.body) }
     );
-    // console.log(order)
+
+    let products = order.products;
+    for (let slug in products) {
+      await Products.findOneAndUpdate(
+        { slug: slug },
+        { $inc: { availableQty: - products[slug].qty } }
+      );
+    }
     res
       .status(200)
       .json({ message: "payment verified successfully", isOk: true });

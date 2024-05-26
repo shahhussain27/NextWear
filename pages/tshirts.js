@@ -11,7 +11,7 @@ const Tshirts = () => {
     <section className="text-gray-600 body-font">
       <div className="container px-5 py-24">
         <div className="flex flex-wrap -m-4 justify-center gap-4">
-        {Object.keys(tshirt).length === 0 && <p>New stock coming soon!</p>}
+          {Object.keys(tshirt).length === 0 && <p>New stock coming soon!</p>}
           {Object.keys(tshirt).map((item, index) => (
             <Link
               href={`/product/${tshirt[item].slug}`}
@@ -52,32 +52,39 @@ const Tshirts = () => {
                   </div>
                 </div>
                 <p className="mt-1">₹{tshirt[item].price}</p>
-                <div>
-                  {tshirt[item].size.includes("S") && (
-                    <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
-                      S
-                    </p>
-                  )}
-                  {tshirt[item].size.includes("M") && (
-                    <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
-                      M
-                    </p>
-                  )}
-                  {tshirt[item].size.includes("L") && (
-                    <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
-                      L
-                    </p>
-                  )}
-                  {tshirt[item].size.includes("XL") && (
-                    <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
-                      XL
-                    </p>
-                  )}
-                  {tshirt[item].size.includes("XXL") && (
-                    <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
-                      XXL
-                    </p>
-                  )}
+                <div className="flex justify-between">
+                  <div>
+                    {tshirt[item].size.includes("S") && (
+                      <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
+                        S
+                      </p>
+                    )}
+                    {tshirt[item].size.includes("M") && (
+                      <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
+                        M
+                      </p>
+                    )}
+                    {tshirt[item].size.includes("L") && (
+                      <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
+                        L
+                      </p>
+                    )}
+                    {tshirt[item].size.includes("XL") && (
+                      <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
+                        XL
+                      </p>
+                    )}
+                    {tshirt[item].size.includes("XXL") && (
+                      <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
+                        XXL
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    {tshirt[item].availableQty >= 0 && (
+                      <h2 className="text-rose-600 font-bold text-lg">Out of Stock</h2>
+                    )}
+                  </div>
                 </div>
               </div>
             </Link>

@@ -30,6 +30,9 @@ const handler = async (req, res) => {
         if (item.availableQty > 0) {
           tshirts[item.title].color = [item.color];
           tshirts[item.title].size = [item.size];
+        } else {
+          tshirts[item.title].color = [];
+          tshirts[item.title].size = [];
         }
       }
     }
@@ -52,6 +55,9 @@ const handler = async (req, res) => {
         if (item.availableQty > 0) {
           hoodies[item.title].color = [item.color];
           hoodies[item.title].size = [item.size];
+        } else {
+          hoodies[item.title].color = [];
+          hoodies[item.title].size = [];
         }
       }
     }
@@ -74,6 +80,9 @@ const handler = async (req, res) => {
         if (item.availableQty > 0) {
           mugs[item.title].color = [item.color];
           mugs[item.title].size = [item.size];
+        } else {
+          mugs[item.title].color = [];
+          mugs[item.title].size = [];
         }
       }
     }
@@ -96,13 +105,16 @@ const handler = async (req, res) => {
         if (item.availableQty > 0) {
           stickers[item.title].color = [item.color];
           stickers[item.title].size = [item.size];
+        } else {
+          stickers[item.title].color = [];
+          stickers[item.title].size = [];
         }
       }
     }
 
     // console.log(tshirts)
 
-    res.status(200).json({ tshirts, hoodies, mugs,stickers });
+    res.status(200).json({ tshirts, hoodies, mugs, stickers });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "Internal Server Error" });

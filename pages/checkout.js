@@ -5,17 +5,25 @@ import Head from "next/head";
 import Script from "next/script";
 import { useRouter } from "next/router";
 import CircularJSON from "circular-json";
+import { Input } from "@nextui-org/input";
+import emptyCart from "../public/empty-cart.png";
 
-const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
+const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
   const [amount, setAmount] = useState(subTotal);
+  const [disabled, setDisabled] = useState(true);
+  const [user, setUser] = useState({ value: null });
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     address: "",
+    state: "",
+    pincode: "",
   });
-  const [disabled, setDisabled] = useState(true);
   const router = useRouter();
+
+  // console.log(user)
+
   // const initiatePayment = async () => {
   //   let oid = Math.floor(Math.random() * Date.now());
 
@@ -71,8 +79,10 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
           body: CircularJSON.stringify({
             amount: amount,
             currency: "INR",
-            email: form.email,
+            email: user.email,
             address: form.address,
+            pincode: form.pincode,
+            phone: form.phone,
             products: cart,
           }),
         }
@@ -83,7 +93,8 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
       }
 
       const data = await response.json();
-      return data.orderId;
+      // console.log(data)
+      return data;
     } catch (error) {
       console.error("There was a problem with your fetch operation:", error);
     }
@@ -91,17 +102,18 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
   const processPayment = async (e) => {
     e.preventDefault();
     try {
-      const orderId = await createOrderId();
+      const orderData = await createOrderId();
+      // console.log(orderData.order._id);
       const options = {
         key: process.env.KEY_ID,
         amount: parseFloat(100) * 100,
         currency: "INR",
         name: "NextWear",
         description: "description",
-        order_id: orderId,
+        order_id: orderData.orderId,
         handler: async function (response) {
           const data = {
-            orderCreationId: orderId,
+            orderCreationId: orderData.orderId,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpayOrderId: response.razorpay_order_id,
             razorpaySignature: response.razorpay_signature,
@@ -116,8 +128,10 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
             }
           );
           const res = await result.json();
-          if (res.isOk) router.push("/order");
-          else {
+          if (res.isOk) {
+            clearCart();
+            router.push(`/order?id=${orderData.order._id}`);
+          } else {
             alert(res.message);
           }
         },
@@ -135,22 +149,47 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
       });
       paymentObject.open();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
+    // console.log(form.pincode.length);
+    if (form.pincode.length == 6) {
+      let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
+      let pinjson = await pins.json();
+      // console.log(form.address);
+
+      if (Object.keys(pinjson).includes(form.pincode)) {
+        setForm((prevForm) => ({
+          ...prevForm,
+          state: pinjson[form.pincode][0],
+        }));
+      }
+    } else {
+      setForm((prevForm) => ({
+        ...prevForm,
+        state: "",
+      }));
+    }
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
   useEffect(() => {
-    const { name, email, phone, address } = form;
-    setDisabled(!(name && email && phone && address));
+    const { phone, address, pincode, state } = form;
+    const user = JSON.parse(localStorage.getItem("user"));
+    // console.log(user)
+    if (user) {
+      setUser(user);
+    }
+    setDisabled(!(phone && address && pincode && state));
   }, [form]);
 
+  // console.log(form);
+
   return (
-    <div className="container m-auto">
+    <div className="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
       <Head>
         <meta
           name="viewport"
@@ -170,126 +209,259 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
         id="razorpay-checkout-js"
         src="https://checkout.razorpay.com/v1/checkout.js"
       />
-      <h1 className="font-bold text-xl my-8 text-center">Checkout</h1>
-      <h2 className="font-bold text-xl">1. Delivery Details</h2>
-      <div className="mx-auto flex flex-wrap my-4 mb-4">
-        <div className="px-2 w-1/2">
-          <div clssName="flex gap-2 mb-4">
-            <label for="name" clssName="leading-7 text-sm text-gray-600">
-              Name
-            </label>
-            <input
-              type="name"
-              id="name"
-              name="name"
-              onChange={handleChange}
-              className="border-2 border-blue-600 rounded py-1 px-2 text-lg w-full"
-            />
-          </div>
-        </div>
-        <div className="px-2 w-1/2">
-          <div clssName="flex gap-2 mb-4">
-            <label for="email" clssName="leading-7 text-sm text-gray-600">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              onChange={handleChange}
-              className="border-2 border-blue-600 rounded py-1 px-2 text-lg w-full"
-            />
-          </div>
-        </div>
-        <div className="px-2 w-1/2">
-          <div clssName="flex gap-2 mb-4">
-            <label for="phone" clssName="leading-7 text-sm text-gray-600">
-              Phone No.
-            </label>
-            <input
-              type="number"
-              id="phone"
-              name="phone"
-              onChange={handleChange}
-              className="border-2 border-blue-600 rounded py-1 px-2 text-lg w-full"
-            />
-          </div>
-        </div>
-        <div className="px-2 w-1/2">
-          <div clssName="flex gap-2 mb-4">
-            <label for="address" clssName="leading-7 text-sm text-gray-600">
-              Address
-            </label>
-            <textarea
-              type="text"
-              id="address"
-              name="address"
-              onChange={handleChange}
-              className="border-2 border-blue-600 rounded py-1 px-2 text-lg w-full"
-            />
-          </div>
-        </div>
-      </div>
-      <h2 className="font-bold text-xl">2. Review Cart Items</h2>
-      <div className="mx-auto flex flex-col my-4 mb-4">
+      <div className="px-4 pt-8">
+        <p className="text-xl font-medium">Order Summary</p>
+        <p className="text-gray-400">
+          Check your items.
+        </p>
         {Object.keys(cart).length === 0 && (
-          <div className="mb-4">No item in the cart</div>
+          <div className="flex flex-col item-center justify-center gap-2 mx-20">
+            <Image src={emptyCart} alt="empty-cart" height={200} width={200} />
+            <h2>Your NextWear Cart is empty</h2>
+          </div>
         )}
         {Object.keys(cart).map((item, index) => {
           return (
             <>
-              <div className="flex justify-between items-center mb-4">
-                <div
-                  key={item}
-                  className="flex gap-2 items-center font-semibold"
-                >
+              <div
+                key={item}
+                className="mt-2 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6"
+              >
+                <div className="flex flex-col items-center rounded-lg bg-white sm:flex-row">
                   <Image
-                    src="https://m.media-amazon.com/images/I/71EcAtglToL._SY741_.jpg"
-                    width={70}
-                    height={70}
+                    className="m-2 h-24 w-28 rounded-md border object-cover object-center"
+                    src={cart[item].img}
+                    alt="img"
+                    height={100}
+                    width={100}
                   />
-                  <h3>{cart[item].name}</h3>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="flex justify-center items-end bg-blue-600 text-white rounded-full w-6 h-6 text-lg font-semibold"
-                    onClick={() => {
-                      removeFromCart(item, 1);
-                    }}
-                  >
-                    -
-                  </button>
-                  <h3 className="font-semibold">{cart[item].qty}</h3>
-                  <button
-                    className="flex justify-center items-end bg-blue-600 text-white rounded-full w-6 h-6 text-lg font-semibold"
-                    onClick={() => {
-                      addToCart(
-                        item,
-                        cart[item].qty,
-                        cart[item].price,
-                        cart[item].name,
-                        cart[item].size,
-                        cart[item].variant
-                      );
-                    }}
-                  >
-                    +
-                  </button>
+                  <div className="flex w-full flex-col px-4 py-4">
+                    <span className="font-semibold">
+                      {cart[item].name}({cart[item].variant})
+                    </span>
+                    <span className="float-right text-gray-400">
+                      <p className="mt-1 mr-1 border border-gray-300 py-1 px-2 rounded-sm text-black inline-block">
+                        {cart[item].size}
+                      </p>
+                    </span>
+                    <p className="text-lg font-bold">₹{cart[item].price}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      className="flex justify-center items-end bg-blue-600 text-white rounded-full w-6 h-6 text-lg font-semibold"
+                      onClick={() => {
+                        removeFromCart(item, 1);
+                      }}
+                    >
+                      -
+                    </button>
+                    <h3 className="font-semibold">{cart[item].qty}</h3>
+                    <button
+                      className="flex justify-center items-end bg-blue-600 text-white rounded-full w-6 h-6 text-lg font-semibold"
+                      onClick={() => {
+                        addToCart(
+                          item,
+                          cart[item].qty,
+                          cart[item].price,
+                          cart[item].name,
+                          cart[item].size,
+                          cart[item].variant
+                        );
+                      }}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
             </>
           );
         })}
       </div>
+      <div className="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
+        <p className="text-xl font-medium">Delivery Details</p>
+        <p className="text-gray-400">
+          Complete your order by providing your delivery details.
+        </p>
+        <div className="">
+          <label for="email" className="mt-4 mb-2 block text-sm font-medium">
+            Email
+          </label>
+          {user ? (
+            <div className="relative">
+              <input
+                type="text"
+                id="email"
+                name="email"
+                value={user.email}
+                readOnly
+                className="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                placeholder="your.email@gmail.com"
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                  />
+                </svg>
+              </div>
+            </div>
+          ) : (
+            <div className="relative">
+              <input
+                type="text"
+                id="email"
+                name="email"
+                onChange={handleChange}
+                value={user.email}
+                className="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                placeholder="your.email@gmail.com"
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                  />
+                </svg>
+              </div>
+            </div>
+          )}
 
-      <button
-        // onClick={initiatePayment}
-        onClick={processPayment}
-        disabled={disabled}
-        className="disabled:bg-blue-400 bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-md"
-      >
-        Pay ₹{subTotal}
-      </button>
+          <label for="name" className="mt-4 mb-2 block text-sm font-medium">
+            Name
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id="name"
+              name="name"
+              onChange={handleChange}
+              value={user.username}
+              className="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm uppercase shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+              placeholder="Your full name here"
+            />
+            <div className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"
+                />
+              </svg>
+            </div>
+          </div>
+          <label for="phone" className="mt-4 mb-2 block text-sm font-medium">
+            Phone No.
+          </label>
+          <div className="flex">
+            <div className="relative w-7/12 flex-shrink-0">
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                minLength={10}
+                maxLength={10}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-200 px-2 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                placeholder="+91 123 456 7891"
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1z" />
+                  <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm13 2v5H1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm-1 9H2a1 1 0 0 1-1-1v-1h14v1a1 1 0 0 1-1 1z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <label for="address" className="mt-4 mb-2 block text-sm font-medium">
+            Billing Address
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="relative flex-shrink-0 sm:w-7/12">
+              <input
+                type="text"
+                id="address"
+                name="address"
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                placeholder="Street Address"
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
+                <img
+                  className="h-4 w-4 object-contain"
+                  src="https://uxwing.com/wp-content/themes/uxwing/download/flags-landmarks/india-flag-icon.png"
+                  alt=""
+                />
+              </div>
+            </div>
+            <input
+              type="text"
+              name="state"
+              placeholder="Delhi"
+              value={form.state}
+              onChange={handleChange}
+              required
+              className="w-full rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+            />
+
+            <input
+              type="text"
+              name="pincode"
+              id="pincode"
+              maxLength={7}
+              minLength={7}
+              onChange={handleChange}
+              className="flex-shrink-0 rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+              placeholder="ZIP"
+              required
+            />
+          </div>
+
+          <div className="mt-6 flex items-center justify-between">
+            <p className="text-sm font-medium text-gray-900">Total</p>
+            <p className="text-2xl font-semibold text-gray-900">₹{subTotal}</p>
+          </div>
+        </div>
+        <button // onClick={initiatePayment}
+          onClick={processPayment}
+          disabled={disabled}
+          className="mt-4 mb-8 w-full rounded-md disabled:bg-blue-400 bg-blue-600 hover:bg-blue-700 px-6 py-3 font-medium text-white"
+        >
+          Place Order
+        </button>
+      </div>
     </div>
   );
 };

@@ -24,7 +24,7 @@ const handler = async (req, res) => {
             process.env.JWT_SECRET
           );
           // console.log({token})
-          res.status(200).json({ token });
+          res.status(200).json({ token: token, user: user });
         } else {
           res
             .status(401)

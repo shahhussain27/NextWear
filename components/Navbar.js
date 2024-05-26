@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { CiShoppingCart, CiUser } from "react-icons/ci";
@@ -7,6 +7,7 @@ import { IoIosCloseCircleOutline, IoIosLogOut } from "react-icons/io";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import logo from "../public/logo.png";
+import emptyCart from "../public/empty-cart.png";
 import {
   Dropdown,
   DropdownTrigger,
@@ -30,6 +31,7 @@ const Navbar = ({
   };
 
   const router = useRouter();
+
 
   // console.log(user.value)
 
@@ -149,7 +151,15 @@ const Navbar = ({
             </div>
 
             {Object.keys(cart).length === 0 && (
-              <div className="mb-4">No item in the cart</div>
+              <div className="flex flex-col item-center justify-center gap-2 mb-4">
+                <Image
+                  src={emptyCart}
+                  alt="empty-cart"
+                  height={100}
+                  width={100}
+                />
+                <h2>Your NextWear Cart is empty</h2>
+              </div>
             )}
             {Object.keys(cart).map((item, index) => {
               return (
@@ -223,12 +233,16 @@ const Navbar = ({
               <h3 className="font-bold mb-4">Subtotal: ₹{subTotal}</h3>
               <div className="flex gap-2">
                 <Link href={"/checkout"}>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-md">
+                  <button
+                    disabled={Object.keys(cart).length === 0}
+                    className="disabled:bg-blue-400 bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-md"
+                  >
                     Checkout
                   </button>
                 </Link>
                 <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-4 rounded-md"
+                  disabled={Object.keys(cart).length === 0}
+                  className="disabled:bg-blue-400 bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-4 rounded-md"
                   onClick={clearCart}
                 >
                   Clear
