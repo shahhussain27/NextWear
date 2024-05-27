@@ -13,10 +13,6 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
   const [size, setSize] = useState();
   const router = useRouter();
 
-  if (error == 404) {
-    return <Error statusCode={404} />;
-  }
-
   useEffect(() => {
     if (!error) {
       setColor(product.color);
@@ -42,6 +38,10 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
     let url = `${process.env.NEXT_PUBLIC_HOST}/product/${variants[newColor][newSize]["slug"]}`;
     router.push(url);
   };
+
+  if (error == 404) {
+    return <Error statusCode={404} />;
+  }
 
   return (
     <section className="text-gray-600 body-font overflow-hidden">
