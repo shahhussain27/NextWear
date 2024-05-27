@@ -4,7 +4,7 @@ import { ProductContext } from "@/context/ProductContext";
 import Link from "next/link";
 import emptyOrders from "../public/empty-orders.png";
 
-const orders = () => {
+const Orders = () => {
   const { orders, cancelOrder } = useContext(ProductContext);
 
   const formateDate = (date) => {
@@ -194,4 +194,4 @@ const orders = () => {
   );
 };
 
-export default orders;
+export default Orders;

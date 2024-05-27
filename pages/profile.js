@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { ProductContext } from "@/context/ProductContext";
 
-const profile = () => {
+const Profile = () => {
   const { updateProfile, updatePassword } = useContext(ProductContext);
 
   const router = useRouter;
@@ -60,7 +60,7 @@ const profile = () => {
         console.error("Error parsing user data from localStorage", error);
       }
     }
-  }, []);
+  }, [router]);
   return (
     <>
       <section className="text-gray-600 body-font relative">
@@ -258,4 +258,4 @@ const profile = () => {
   );
 };
 
-export default profile;
+export default Profile;

@@ -38,7 +38,7 @@ const Navbar = ({
     if (exempted.includes(router.pathname)) {
       setIsOpen(false);
     }
-  }, []);
+  }, [router]);
 
   return (
     <header className="text-gray-600 body-font shadow-xl sticky top-0 bg-white z-10">

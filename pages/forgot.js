@@ -4,7 +4,7 @@ import logo from "../public/logo.png";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
-const forgot = () => {
+const Forgot = () => {
   const router = useRouter();
 
   const notify = (message, type) => {
@@ -22,7 +22,7 @@ const forgot = () => {
     if (localStorage.getItem("token")) {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -63,7 +63,7 @@ const forgot = () => {
 
   const resetPassword = async () => {
     try {
-      if (password == cpassword) {
+      if (password === cpassword) {
         // console.log(router.query.token)
         let data = {
           password: password,
@@ -202,4 +202,4 @@ const forgot = () => {
   );
 };
 
-export default forgot;
+export default Forgot;

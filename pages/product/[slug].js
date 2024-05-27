@@ -22,7 +22,7 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
       setColor(product.color);
       setSize(product.size);
     }
-  }, [router.query]);
+  }, [router]);
 
   const checkServiceability = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
