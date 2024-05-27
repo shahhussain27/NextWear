@@ -8,7 +8,14 @@ const orders = () => {
   const { orders, cancelOrder } = useContext(ProductContext);
 
   const formateDate = (date) => {
-    const formattedDate = new Date(date).toISOString().split("T")[0];
+    const formattedDate = new Date(date)
+      .toLocaleDateString("en-IN", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+      .split("T")[0];
     return formattedDate;
   };
 
@@ -18,7 +25,7 @@ const orders = () => {
         <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center mb-4">
           Your Orders
         </h2>
-       
+
         {Object.keys(orders).length === 0 && (
           <div className="flex flex-col justify-center items-center">
             <Image
@@ -50,7 +57,7 @@ const orders = () => {
                         </Link>
                       </p>
                       <p className="flex gap-2 font-semibold text-base leading-7 text-black mt-4">
-                        Order Payment :
+                        Order Placed On :
                         <span className="text-gray-400 font-medium ">
                           {formateDate(orders[item].createdAt)}
                         </span>

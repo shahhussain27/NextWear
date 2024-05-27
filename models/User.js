@@ -5,7 +5,10 @@ const UserSchema = new Schema(
   {
     username: { type: String, require: true },
     email: { type: String, require: true, unique: true },
-    password: { type: String, require: true },
+    password: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    address: { type: String, default: "" },
+    pincode: { type: String, default: "" },
   },
   { timestamps: true }
 );

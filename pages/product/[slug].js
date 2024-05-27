@@ -1,17 +1,28 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Products from "@/models/Products";
 import mongoose from "mongoose";
+import Error from "next/error";
 
-export default function Page({ addToCart, product, variants, buyNow }) {
+export default function Page({ addToCart, product, variants, buyNow, error }) {
   // console.log(product, variants )
   const [pin, setPin] = useState();
-  const [service, setService] = useState('');
-  const [color, setColor] = useState(product.color);
-  const [size, setSize] = useState(product.size);
-
+  const [service, setService] = useState();
+  const [color, setColor] = useState();
+  const [size, setSize] = useState();
   const router = useRouter();
+
+  if (error == 404) {
+    return <Error statusCode={404} />;
+  }
+
+  useEffect(() => {
+    if (!error) {
+      setColor(product.color);
+      setSize(product.size);
+    }
+  }, [router.query]);
 
   const checkServiceability = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
@@ -29,10 +40,8 @@ export default function Page({ addToCart, product, variants, buyNow }) {
 
   const refreshVariant = (newSize, newColor) => {
     let url = `${process.env.NEXT_PUBLIC_HOST}/product/${variants[newColor][newSize]["slug"]}`;
-    window.location = url;
+    router.push(url);
   };
-
- 
 
   return (
     <section className="text-gray-600 body-font overflow-hidden">
@@ -154,7 +163,7 @@ export default function Page({ addToCart, product, variants, buyNow }) {
             <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
               <div className="flex">
                 <span className="mr-3">Color</span>
-                {Object.keys(variants).includes("White") &&
+                {color && Object.keys(variants).includes("White") &&
                   Object.keys(variants["White"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -165,7 +174,7 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                       }`}
                     ></button>
                   )}
-                {Object.keys(variants).includes("Black") &&
+                {color && Object.keys(variants).includes("Black") &&
                   Object.keys(variants["Black"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -176,7 +185,7 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                       }`}
                     ></button>
                   )}
-                {Object.keys(variants).includes("Red") &&
+                {color && Object.keys(variants).includes("Red") &&
                   Object.keys(variants["Red"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -187,7 +196,7 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                       }`}
                     ></button>
                   )}
-                {Object.keys(variants).includes("Blue") &&
+                {color && Object.keys(variants).includes("Blue") &&
                   Object.keys(variants["Blue"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -198,7 +207,7 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                       }`}
                     ></button>
                   )}
-                {Object.keys(variants).includes("Yellow") &&
+                {color && Object.keys(variants).includes("Yellow") &&
                   Object.keys(variants["Yellow"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -220,19 +229,19 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                     }}
                     className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10"
                   >
-                    {Object.keys(variants[color]).includes("S") && (
+                    {size && Object.keys(variants[color]).includes("S") && (
                       <option value={"S"}>S</option>
                     )}
-                    {Object.keys(variants[color]).includes("M") && (
+                    {size && Object.keys(variants[color]).includes("M") && (
                       <option value={"M"}>M</option>
                     )}
-                    {Object.keys(variants[color]).includes("L") && (
+                    {size && Object.keys(variants[color]).includes("L") && (
                       <option value={"L"}>L</option>
                     )}
-                    {Object.keys(variants[color]).includes("XL") && (
+                    {size && Object.keys(variants[color]).includes("XL") && (
                       <option value={"XL"}>XL</option>
                     )}
-                    {Object.keys(variants[color]).includes("XXL") && (
+                    {size && Object.keys(variants[color]).includes("XXL") && (
                       <option value={"XXL"}>XXL</option>
                     )}
                   </select>
@@ -283,9 +292,16 @@ export default function Page({ addToCart, product, variants, buyNow }) {
               </div>
             </div>
             <div className="flex">
-              <span className="title-font font-medium text-2xl text-gray-900 mr-4">
-                ₹{product.price}
-              </span>
+              <div>
+                {/* {console.log(product.availableQty)} */}
+                {product.availableQty <= 0 ? (
+                  <span className="text-rose-500 font-bold font-mono"></span>
+                ) : (
+                  <span className="title-font font-medium text-2xl text-gray-900 mr-4">
+                    ₹{product.price}
+                  </span>
+                )}
+              </div>
 
               <div className="flex  gap-2">
                 <button
@@ -300,12 +316,14 @@ export default function Page({ addToCart, product, variants, buyNow }) {
                       product.img
                     );
                   }}
-                  className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
+                  disabled={product.availableQty <= 0}
+                  className="disabled:bg-blue-400 flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
                 >
                   Buy Now
                 </button>
                 <button
-                  className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
+                  disabled={product.availableQty <= 0}
+                  className="disabled:bg-blue-400 flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
                   onClick={() => {
                     addToCart(
                       router.query.slug,
@@ -342,12 +360,23 @@ export default function Page({ addToCart, product, variants, buyNow }) {
 }
 
 export async function getServerSideProps(context) {
+  let error = null;
   if (mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.MONGO_URL);
   }
 
   let product = await Products.findOne({ slug: context.query.slug });
-  let variants = await Products.find({ title: product.title, category: product.category });
+  if (product == null) {
+    return {
+      props: {
+        error: 404,
+      },
+    };
+  }
+  let variants = await Products.find({
+    title: product.title,
+    category: product.category,
+  });
   let colorSizeSlug = {};
   for (let item of variants) {
     if (Object.keys(colorSizeSlug).includes(item.color)) {
@@ -360,6 +389,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
+      error: error,
       product: JSON.parse(JSON.stringify(product)),
       variants: JSON.parse(JSON.stringify(colorSizeSlug)),
     },

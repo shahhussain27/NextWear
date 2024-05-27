@@ -24,6 +24,8 @@ const handler = async (req, res) => {
     let order;
 
     const signature = generatedSignature(orderCreationId, razorpayPaymentId);
+    // console.log(signature);
+
 
     if (signature !== razorpaySignature) {
       order = await Order.findOneAndUpdate(

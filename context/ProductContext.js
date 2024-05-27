@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { set } from "mongoose";
 
 const ProductContext = createContext();
 
@@ -74,11 +73,99 @@ const ProductProvider = ({ children }) => {
 
       const json = await response.json();
       if (json.token) {
-        notify("User Login Successfull", "success");
+        notify("Welcome To NextWear", "success");
         localStorage.setItem("token", json.token);
         localStorage.setItem("user", JSON.stringify(json.user));
         // console.log(json.user)
         router.push("/");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const profile = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/getuser`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: localStorage.getItem("token") }),
+        }
+      );
+
+      if (!response.ok) {
+        notify(`${response.statusText}`, "error");
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const json = await response.json();
+      // console.log(json);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updateProfile = async (name, phone, address, pincode) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/updateuser`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: localStorage.getItem("token"),
+            name: name,
+            phone: phone,
+            address: address,
+            pincode: pincode,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        notify(`${response.statusText}`, "error");
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const json = await response.json();
+      // console.log(json);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updatePassword = async (password, cpassword, npassword) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/updatepassword`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: localStorage.getItem("token"),
+            password: password,
+            cpassword: cpassword,
+            npassword: npassword,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        notify(`${response.statusText}`, "error");
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const json = await response.json();
+      if (json.success) {
+        notify("Your Password Has Been Change", "success");
       }
     } catch (error) {
       console.error(error);
@@ -182,13 +269,15 @@ const ProductProvider = ({ children }) => {
       value={{
         signup,
         login,
+        profile,
+        updateProfile,
+        updatePassword,
         tshirt,
         hoodies,
         mugs,
         stickers,
         orders,
         cancelOrder,
-        
       }}
     >
       {children}

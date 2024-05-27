@@ -32,10 +32,13 @@ const Navbar = ({
 
   const router = useRouter();
 
-
-  // console.log(user.value)
-
-  // console.log(cart)
+  useEffect(() => {
+    Object.keys(cart).length !== 0 && setIsOpen(true);
+    let exempted = ["/checkout", "/order", "/orders", "/profile"];
+    if (exempted.includes(router.pathname)) {
+      setIsOpen(false);
+    }
+  }, []);
 
   return (
     <header className="text-gray-600 body-font shadow-xl sticky top-0 bg-white z-10">
@@ -169,7 +172,12 @@ const Navbar = ({
                       key={item}
                       className="flex gap-2 items-center font-semibold"
                     >
-                      <Image src={cart[item].img} width={70} height={70} />
+                      <Image
+                        src={cart[item].img}
+                        alt="img"
+                        width={70}
+                        height={70}
+                      />
                       <div className="flex flex-col justify-center items-start">
                         <h3>{cart[item].name}</h3>
                         <div className="flex justify-center items-center gap-2">

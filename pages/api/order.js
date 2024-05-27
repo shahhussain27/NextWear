@@ -2,6 +2,7 @@ import Razorpay from "razorpay";
 import Order from "@/models/Order";
 import connectDB from "@/middleware/mongoose";
 import Products from "@/models/Products";
+import pincode from "../../pincodes.json";
 
 const razorpay = new Razorpay({
   key_id: process.env.KEY_ID,
@@ -19,6 +20,14 @@ const handler = async (req, res) => {
       receipt: "rcp1",
     };
 
+    if (!Object.keys(pincode).includes(req.body.pincode)) {
+      res.status(400).json({
+        status: false,
+        msg: "Sorry! We do not deliver to this pincode yet",
+      });
+      return;
+    }
+
     let product,
       subTotal = 0;
 
@@ -30,10 +39,10 @@ const handler = async (req, res) => {
       subTotal += req.body.products[item].price * req.body.products[item].qty;
       product = await Products.findOne({ slug: item });
       if (product.availableQty < req.body.products[item].qty) {
-        res.status(400).json({ status: false, msg: "error" });
+        res.status(400).json({ status: false, msg: "Out Of Stock" });
       }
       if (product.price != req.body.products[item].price) {
-        res.status(400).json({ status: false, msg: "error" });
+        res.status(400).json({ status: false, msg: "Data Has Been Change" });
         return;
       }
     }
@@ -64,9 +73,14 @@ const handler = async (req, res) => {
     const order = await razorpay.orders.create(options);
 
     let newOrder = new Order({
+      namd: req.body.name,
       email: req.body.email,
+      phone: req.body.phone,
       orderId: order.id,
       address: req.body.address,
+      state: req.body.state,
+      city: req.body.city,
+      pincode: req.body.pincode,
       amount: amount,
       products: req.body.products,
     });

@@ -42,27 +42,38 @@ export default function App({ Component, pageProps }) {
   }, [router.query]);
 
   const saveCart = (setCart) => {
-    localStorage.setItem("cart", JSON.stringify(setCart));
-    let subt = 0;
-    let keys = Object.keys(setCart);
-    for (let i = 0; i < keys.length; i++) {
-      subt += setCart[keys[i]].price * setCart[keys[i]].qty;
+    if (user.value == null) {
+      router.push("/login");
+    } else {
+      localStorage.setItem("cart", JSON.stringify(setCart));
+      let subt = 0;
+      let keys = Object.keys(setCart);
+      for (let i = 0; i < keys.length; i++) {
+        subt += setCart[keys[i]].price * setCart[keys[i]].qty;
+      }
+      setSubTotal(subt);
     }
-    setSubTotal(subt);
   };
 
   const addToCart = (itemCode, qty, price, name, size, variant, img) => {
     // console.log(qty);
-    let newCart = cart;
-    if (itemCode in cart) {
-      newCart[itemCode].qty = cart[itemCode].qty + 1;
+    if (user.value == null) {
+      router.push("/login");
     } else {
-      newCart[itemCode] = { qty: 1, price, name, size, variant, img };
+      if (Object.keys(cart).length == 0) {
+        setKey(Math.random());
+        notify(`${name} is added into your cart`);
+      }
+      let newCart = cart;
+      if (itemCode in cart) {
+        newCart[itemCode].qty = cart[itemCode].qty + 1;
+      } else {
+        newCart[itemCode] = { qty: 1, price, name, size, variant, img };
+      }
+      setCart(newCart);
+
+      saveCart(newCart);
     }
-    setCart(newCart);
-    // console.log(newCart)
-    saveCart(newCart);
-    notify(`${name} is added into your cart`);
   };
 
   const removeFromCart = (itemCode, qty) => {
@@ -72,6 +83,7 @@ export default function App({ Component, pageProps }) {
     }
     if (newCart[itemCode].qty <= 0) {
       delete newCart[itemCode];
+      setKey(Math.random());
     }
     setCart(newCart);
     saveCart(newCart);
@@ -80,14 +92,19 @@ export default function App({ Component, pageProps }) {
   const clearCart = () => {
     setCart({});
     saveCart({});
+    setKey(Math.random());
   };
 
   const buyNow = (itemCode, qty, price, name, size, variant, img) => {
-    let newCart = {};
-    newCart[itemCode] = { qty: 1, price, name, size, variant, img };
-    setCart(newCart);
-    saveCart(newCart);
-    router.push("/checkout");
+    if (user.value == null) {
+      router.push("/login");
+    } else {
+      let newCart = {};
+      newCart[itemCode] = { qty: 1, price, name, size, variant, img };
+      setCart(newCart);
+      saveCart(newCart);
+      router.push("/checkout");
+    }
   };
 
   const logout = () => {

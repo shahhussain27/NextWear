@@ -12,15 +12,55 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
   const [amount, setAmount] = useState(subTotal);
   const [disabled, setDisabled] = useState(true);
   const [user, setUser] = useState({ value: null });
+  // console.log(user)
   const [form, setForm] = useState({
     name: "",
     email: "",
-    phone: "",
-    address: "",
+    phone: user.phone || "",
+    address: user.address || "",
     state: "",
-    pincode: "",
+    city: "",
+    pincode: user.pincode || "",
   });
+
+  // console.log(form)
   const router = useRouter();
+
+  useEffect(() => {
+    const { phone, address, pincode, state, city } = form;
+    const user = JSON.parse(localStorage.getItem("user"));
+    // console.log(user)
+    if (user) {
+      setUser(user);
+    }
+    setDisabled(!(phone && address && pincode && state && city));
+  }, [form]);
+
+  const getPinCode = async (pin) => {
+    let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
+    let pinjson = await pins.json();
+    // console.log(form.address);
+
+    if (Object.keys(pinjson).includes(pin)) {
+      setForm((prevForm) => ({
+        ...prevForm,
+        state: pinjson[pin][0],
+      }));
+      setForm((prevForm) => ({
+        ...prevForm,
+        city: pinjson[pin][1],
+      }));
+    } else {
+      setForm((prevForm) => ({
+        ...prevForm,
+        state: "",
+      }));
+      setForm((prevForm) => ({
+        ...prevForm,
+        city: "",
+      }));
+    }
+  };
 
   // console.log(user)
 
@@ -79,8 +119,11 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
           body: CircularJSON.stringify({
             amount: amount,
             currency: "INR",
+            name: form.name,
             email: user.email,
             address: form.address,
+            state: form.state,
+            city: form.city,
             pincode: form.pincode,
             phone: form.phone,
             products: cart,
@@ -89,7 +132,8 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        // console.log(response)
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -154,37 +198,12 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
   };
 
   const handleChange = async (e) => {
-    // console.log(form.pincode.length);
     if (form.pincode.length == 6) {
-      let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
-      let pinjson = await pins.json();
-      // console.log(form.address);
-
-      if (Object.keys(pinjson).includes(form.pincode)) {
-        setForm((prevForm) => ({
-          ...prevForm,
-          state: pinjson[form.pincode][0],
-        }));
-      }
-    } else {
-      setForm((prevForm) => ({
-        ...prevForm,
-        state: "",
-      }));
+      getPinCode(form.pincode);
     }
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
-
-  useEffect(() => {
-    const { phone, address, pincode, state } = form;
-    const user = JSON.parse(localStorage.getItem("user"));
-    // console.log(user)
-    if (user) {
-      setUser(user);
-    }
-    setDisabled(!(phone && address && pincode && state));
-  }, [form]);
 
   // console.log(form);
 
@@ -211,9 +230,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
       />
       <div className="px-4 pt-8">
         <p className="text-xl font-medium">Order Summary</p>
-        <p className="text-gray-400">
-          Check your items.
-        </p>
+        <p className="text-gray-400">Check your items.</p>
         {Object.keys(cart).length === 0 && (
           <div className="flex flex-col item-center justify-center gap-2 mx-20">
             <Image src={emptyCart} alt="empty-cart" height={200} width={200} />
@@ -378,7 +395,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
           <label for="phone" className="mt-4 mb-2 block text-sm font-medium">
             Phone No.
           </label>
-          <div className="flex">
+          <div className="flex gap-2">
             <div className="relative w-7/12 flex-shrink-0">
               <input
                 type="text"
@@ -387,6 +404,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
                 minLength={10}
                 maxLength={10}
                 onChange={handleChange}
+                value={form.phone}
                 className="w-full rounded-md border border-gray-200 px-2 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
                 placeholder="+91 123 456 7891"
               />
@@ -404,6 +422,18 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
                 </svg>
               </div>
             </div>
+            <input
+              type="text"
+              name="pincode"
+              id="pincode"
+              maxLength={7}
+              minLength={7}
+              onChange={handleChange}
+              value={form.pincode}
+              className="flex-shrink-0 w-full rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+              placeholder="ZIP"
+              required
+            />
           </div>
           <label for="address" className="mt-4 mb-2 block text-sm font-medium">
             Billing Address
@@ -415,6 +445,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
                 id="address"
                 name="address"
                 onChange={handleChange}
+                value={form.address}
                 className="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
                 placeholder="Street Address"
               />
@@ -429,7 +460,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
             <input
               type="text"
               name="state"
-              placeholder="Delhi"
+              placeholder="State"
               value={form.state}
               onChange={handleChange}
               required
@@ -438,13 +469,12 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
 
             <input
               type="text"
-              name="pincode"
-              id="pincode"
-              maxLength={7}
-              minLength={7}
+              name="city"
+              id="city"
               onChange={handleChange}
+              value={form.city}
               className="flex-shrink-0 rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-              placeholder="ZIP"
+              placeholder="City"
               required
             />
           </div>

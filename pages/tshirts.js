@@ -80,11 +80,13 @@ const Tshirts = () => {
                       </p>
                     )}
                   </div>
-                  <div>
+                  {/* <div>
                     {tshirt[item].availableQty >= 0 && (
-                      <h2 className="text-rose-600 font-bold text-lg">Out of Stock</h2>
+                      <h2 className="text-rose-500 font-bold font-mono text-sm border-2 border-rose- p-1 rounded-md">
+                        Out Of Stock
+                      </h2>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Link>
