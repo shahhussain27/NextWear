@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { ProductContext } from "@/context/ProductContext";
 
 const profile = () => {
-  const { profile, updateProfile, updatePassword } = useContext(ProductContext);
+  const { updateProfile, updatePassword } = useContext(ProductContext);
 
   const router = useRouter;
   const [form, setForm] = useState({

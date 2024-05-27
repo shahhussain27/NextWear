@@ -29,6 +29,7 @@ const Signup = () => {
           src={logo}
           height={80}
           width={80}
+          alt="logo"
           className="mx-auto h-15 w-15"
         />
         <h2 className=" text-center text-xl leading-9 tracking-tight text-gray-900">

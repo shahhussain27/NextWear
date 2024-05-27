@@ -1,13 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import logo from "../public/logo.png";
-import { ProductContext } from "@/context/ProductContext";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
 const forgot = () => {
-  const { login } = useContext(ProductContext);
   const router = useRouter();
 
   const notify = (message, type) => {
@@ -102,6 +99,7 @@ const forgot = () => {
           src={logo}
           height={80}
           width={80}
+          alt="logo"
           className="mx-auto h-15 w-15"
         />
         <h2 className=" text-center text-xl leading-9 tracking-tight text-gray-900">
