@@ -19,12 +19,16 @@ export default function App({ Component, pageProps }) {
   const notify = (msg) => toast.success(msg);
 
   useEffect(() => {
-    router.events.on("routeChangeStart", () => {
+    const handleRouteChangeStart = () => {
       setProgress(40);
-    });
-    router.events.on("routeChangeComplete", () => {
+    };
+
+    const handleRouteChangeComplete = () => {
       setProgress(100);
-    });
+    };
+
+    router.events.on("routeChangeStart", handleRouteChangeStart);
+    router.events.on("routeChangeComplete", handleRouteChangeComplete);
 
     try {
       if (localStorage.getItem("cart")) {
@@ -34,12 +38,19 @@ export default function App({ Component, pageProps }) {
       console.error(error);
       localStorage.clear();
     }
+
     const token = localStorage.getItem("token");
     if (token) {
       setUser({ value: token });
       setKey(Math.random());
     }
-  }, [router.query]);
+
+    // Cleanup function
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChangeStart);
+      router.events.off("routeChangeComplete", handleRouteChangeComplete);
+    };
+  }, [router.events, router]);
 
   const saveCart = (setCart) => {
     if (user.value == null) {

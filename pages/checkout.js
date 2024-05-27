@@ -5,7 +5,7 @@ import Head from "next/head";
 import Script from "next/script";
 import { useRouter } from "next/router";
 import CircularJSON from "circular-json";
-import { Input } from "@nextui-org/input";
+import ind from "../public/ind.webp";
 import emptyCart from "../public/empty-cart.png";
 
 const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
@@ -450,10 +450,12 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
                 placeholder="Street Address"
               />
               <div className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
-                <img
+                <Image
                   className="h-4 w-4 object-contain"
-                  src="https://uxwing.com/wp-content/themes/uxwing/download/flags-landmarks/india-flag-icon.png"
-                  alt=""
+                  src={ind}
+                  alt="india"
+                  width={100}
+                  height={100}
                 />
               </div>
             </div>

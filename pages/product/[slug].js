@@ -22,7 +22,7 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
       setColor(product.color);
       setSize(product.size);
     }
-  }, [router]);
+  }, [error, product.color, product.size]);
 
   const checkServiceability = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
@@ -163,7 +163,8 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
             <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
               <div className="flex">
                 <span className="mr-3">Color</span>
-                {color && Object.keys(variants).includes("White") &&
+                {color &&
+                  Object.keys(variants).includes("White") &&
                   Object.keys(variants["White"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -174,7 +175,8 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
                       }`}
                     ></button>
                   )}
-                {color && Object.keys(variants).includes("Black") &&
+                {color &&
+                  Object.keys(variants).includes("Black") &&
                   Object.keys(variants["Black"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -185,7 +187,8 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
                       }`}
                     ></button>
                   )}
-                {color && Object.keys(variants).includes("Red") &&
+                {color &&
+                  Object.keys(variants).includes("Red") &&
                   Object.keys(variants["Red"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -196,7 +199,8 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
                       }`}
                     ></button>
                   )}
-                {color && Object.keys(variants).includes("Blue") &&
+                {color &&
+                  Object.keys(variants).includes("Blue") &&
                   Object.keys(variants["Blue"]).includes(size) && (
                     <button
                       onClick={() => {
@@ -207,7 +211,8 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
                       }`}
                     ></button>
                   )}
-                {color && Object.keys(variants).includes("Yellow") &&
+                {color &&
+                  Object.keys(variants).includes("Yellow") &&
                   Object.keys(variants["Yellow"]).includes(size) && (
                     <button
                       onClick={() => {
