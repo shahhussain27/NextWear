@@ -4,6 +4,15 @@ var CryptoJS = require("crypto-js");
 var jwt = require("jsonwebtoken");
 
 const handler = async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   if (req.method === "POST") {
     try {
       let user = await User.findOne({ email: req.body.email });
