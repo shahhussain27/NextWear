@@ -1,13 +1,13 @@
-import Contents from "@/components/Contents";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
-import "@/styles/globals.css";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import "../styles/globals.css";
 import { useEffect, useState } from "react";
-import { ProductProvider } from "@/context/ProductContext";
+import { ProductProvider } from "../context/ProductContext";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingBar from "react-top-loading-bar";
+
 
 export default function App({ Component, pageProps }) {
   const [cart, setCart] = useState({});
@@ -134,7 +134,7 @@ export default function App({ Component, pageProps }) {
           onLoaderFinished={() => setProgress(0)}
           waitingTime={500}
         />
-        {key && (
+        {/* {key && ( */}
           <Navbar
             user={user}
             key={key}
@@ -145,19 +145,20 @@ export default function App({ Component, pageProps }) {
             clearCart={clearCart}
             subTotal={subTotal}
           />
-        )}
-
-        <Component
-          cart={cart}
-          addToCart={addToCart}
-          removeFromCart={removeFromCart}
-          clearCart={clearCart}
-          subTotal={subTotal}
-          buyNow={buyNow}
-          user={user}
-          {...pageProps}
-        />
-        <Contents />
+        {/* )} */}
+        
+            <Component
+              cart={cart}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              clearCart={clearCart}
+              subTotal={subTotal}
+              buyNow={buyNow}
+              user={user}
+              {...pageProps}
+            />
+        
+        
         <Footer />
         <ToastContainer
           position="bottom-right"

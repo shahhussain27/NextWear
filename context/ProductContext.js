@@ -10,6 +10,7 @@ const ProductProvider = ({ children }) => {
   const [mugs, setMugs] = useState([]);
   const [stickers, setStickers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [myorders, setMyOrders] = useState([]);
 
   const router = useRouter();
 
@@ -220,10 +221,13 @@ const ProductProvider = ({ children }) => {
       const json = await response.json();
       // console.log(json)
       setOrders(json.orders);
+      setMyOrders(json.myorders);
     } catch (error) {
       console.error(error);
     }
   };
+
+  // console.log(myorders)
 
   const cancelOrder = async (id) => {
     try {
@@ -258,6 +262,53 @@ const ProductProvider = ({ children }) => {
     }
   };
 
+  const addProducts = async (
+    img,
+    title,
+    slug,
+    category,
+    size,
+    color,
+    desc,
+    price,
+    availableQty
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/addProducts`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            img: img,
+            title: title,
+            slug: slug,
+            category: category,
+            size: size,
+            color: color,
+            desc: desc,
+            price: price,
+            availableQty: availableQty,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        notify(`${response.statusText}`, "error");
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const json = await response.json();
+      if (json.success) {
+        notify("Product Added", "success");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // console.log(user)
 
   useEffect(() => {
@@ -277,7 +328,9 @@ const ProductProvider = ({ children }) => {
         mugs,
         stickers,
         orders,
+        myorders,
         cancelOrder,
+        addProducts,
       }}
     >
       {children}

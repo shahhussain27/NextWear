@@ -16,6 +16,9 @@ const OrderSchema = new Schema(
     amount: { type: Number, require: true },
     status: { type: String, default: "Pending", require: true },
     devliveryStatus: { type: String, default: "unshipped", require: true },
+    packagingDate: { type: String, default: "none" },
+    shippingDate: { type: String, default: "none" },
+    deliveredDate: { type: String, default: "none" },
   },
   { timestamps: true }
 );

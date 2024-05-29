@@ -16,6 +16,7 @@ const Orders = () => {
         day: "numeric",
       })
       .split("T")[0];
+
     return formattedDate;
   };
 
@@ -59,14 +60,17 @@ const Orders = () => {
                       <p className="flex gap-2 font-semibold text-base leading-7 text-black mt-4">
                         Order Placed On :
                         <span className="text-gray-400 font-medium ">
-                          {formateDate(orders[item].createdAt)}
+                          {/* {console.log(formateDate(orders[item].createdAt))} */}
+                          {formateDate(orders[item].createdAt) || "None"}
                         </span>
                       </p>
                     </div>
                     {orders[item].status === "Paid" && (
+                      <Link href={`/track/orderTrack?id=${orders[item]._id}`}>
                       <button className="rounded-full py-3 px-7 font-semibold text-sm leading-7 text-white bg-indigo-600 max-lg:mt-5 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
                         Track Your Order
                       </button>
+                      </Link>
                     )}
                     {orders[item].status === "Pending" && (
                       <button className="rounded-full py-3 px-7 font-semibold text-sm leading-7 text-white bg-indigo-600 max-lg:mt-5 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
