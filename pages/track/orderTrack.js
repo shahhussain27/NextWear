@@ -1,10 +1,57 @@
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useContext } from "react";
 import mongoose from "mongoose";
 import Order from "@/models/Order";
 import Image from "next/image";
+import { ProductContext } from "@/context/ProductContext";
+import Modal from "@mui/material/Modal";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "30%",
+  bgcolor: "background.paper",
+
+  p: 4,
+};
 
 const TrackOrder = ({ order }) => {
+  const { cancelOrder } = useContext(ProductContext);
+  const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+  // console.log(JSON.parse(order.paymentInfo).razorpayPaymentId);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  async function refundPayment(paymentId, amount) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/refund`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ paymentId, amount }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to refund payment");
+      }
+
+      const data = await response.json();
+      cancelOrder(order._id);
+      router.push("/");
+      // console.log("Refund successful:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   return (
     <section className=" py-8 antialiased  md:py-16">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -49,24 +96,24 @@ const TrackOrder = ({ order }) => {
               <div className="space-y-2">
                 <dl className="flex items-center justify-between gap-4">
                   <dt className="font-normal text-gray-500 ">Original price</dt>
-                  <dd className="font-medium text-gray-900 ">₹6,592.00</dd>
-                </dl>
-
-                <dl className="flex items-center justify-between gap-4">
-                  <dt className="font-normal text-gray-500 ">Savings</dt>
-                  <dd className="text-base font-medium text-green-500">
-                    -₹299.00
+                  <dd className="font-medium text-gray-900 ">
+                    ₹{order.amount}
                   </dd>
                 </dl>
 
                 <dl className="flex items-center justify-between gap-4">
+                  <dt className="font-normal text-gray-500 ">Savings</dt>
+                  <dd className="text-base font-medium text-green-500">₹0</dd>
+                </dl>
+
+                <dl className="flex items-center justify-between gap-4">
                   <dt className="font-normal text-gray-500 ">Store Pickup</dt>
-                  <dd className="font-medium text-gray-900 ">₹99</dd>
+                  <dd className="font-medium text-gray-900 ">₹0</dd>
                 </dl>
 
                 <dl className="flex items-center justify-between gap-4">
                   <dt className="font-normal text-gray-500 ">Tax</dt>
-                  <dd className="font-medium text-gray-900 ">₹799</dd>
+                  <dd className="font-medium text-gray-900 ">₹0</dd>
                 </dl>
               </div>
 
@@ -196,6 +243,7 @@ const TrackOrder = ({ order }) => {
               <div className="gap-4 sm:flex sm:items-center">
                 <button
                   type="button"
+                  onClick={handleOpen}
                   className="w-full rounded-lg  border border-gray-200  px-5  py-2.5 text-sm font-medium text-gray-900 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 "
                 >
                   Cancel the order
@@ -212,6 +260,38 @@ const TrackOrder = ({ order }) => {
           </div>
         </div>
       </div>
+      <Modal open={open} onClose={handleClose}>
+        <div style={style}>
+          <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-md">
+            <div className="text-xl text-center font-semibold text-gray-800">
+              Are you sure you want to cancel this order?
+            </div>
+            <div className="mt-2 text-center text-gray-600 ">
+              Amount will be credited to your bank account within 5-7 working
+              days after the refund has processed
+            </div>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                onClick={handleClose}
+                className="border border-gray-200 hover:bg-gray-100 py-1.5 px-4 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  refundPayment(
+                    JSON.parse(order.paymentInfo).razorpayPaymentId,
+                    order.amount
+                  );
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded"
+              >
+                Confirm Cancellation
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </section>
   );
 };

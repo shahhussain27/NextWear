@@ -7,7 +7,7 @@ const OrderSchema = new Schema(
     email: { type: String, require: true },
     phone: { type: Number, require: true },
     orderId: { type: String, require: true },
-    paymentInfo: { type: String, default: "" },
+    paymentInfo: { type: Object, default: {} },
     products: { type: Object, require: true },
     address: { type: String, require: true },
     state: { type: String, require: true },

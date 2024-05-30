@@ -88,22 +88,22 @@ const AllOrders = ({ orders }) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="h6">
-                  Payment Status
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="h6">
                   Devlivery Status
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="h6">
-                  Info
+                  Customer Details
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="h6">
                   Order Details
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6">
+                  Action
                 </Typography>
               </TableCell>
             </TableRow>
@@ -147,14 +147,7 @@ const AllOrders = ({ orders }) => {
                       ₹{order.amount}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="h6"
-                      className="bg-yellow-400 text-white text-center rounded-full"
-                    >
-                      {order.status}
-                    </Typography>
-                  </TableCell>
+
                   <TableCell>
                     {order.devliveryStatus.includes("unshipped") && (
                       <Typography className="bg-yellow-400 text-white text-center rounded-full">
@@ -178,7 +171,7 @@ const AllOrders = ({ orders }) => {
                         variant="contained"
                         className="bg-blue-600 hover:bg-blue-700 text-center"
                       >
-                        Info
+                        Show
                       </Button>
                     </Typography>
                   </TableCell>
@@ -190,6 +183,13 @@ const AllOrders = ({ orders }) => {
                     >
                       More
                     </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="h6">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded">
+                        Fulfill Order
+                      </button>
+                    </Typography>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -393,11 +393,6 @@ const AllOrders = ({ orders }) => {
               </React.Fragment>
             </TableBody>
           </Table>
-          <div className="flex justify-center items-center mt-4">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3">
-              Print Recipt
-            </button>
-          </div>
         </Box>
       </Modal>
     </>

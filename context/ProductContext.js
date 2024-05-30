@@ -251,7 +251,7 @@ const ProductProvider = ({ children }) => {
 
       const json = await response.json();
       if (json.status === "success") {
-        notify("Order Deleted Successfully", "success");
+        notify("Order Cancel Successfull", "success");
         const newOrders = orders.filter((order) => {
           return order._id !== id;
         });

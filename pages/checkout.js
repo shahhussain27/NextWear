@@ -117,7 +117,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
             "Content-Type": "application/json",
           },
           body: CircularJSON.stringify({
-            amount: amount,
+            amount: subTotal,
             currency: "INR",
             name: form.name,
             email: user.email,
@@ -156,6 +156,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal, clearCart }) => {
         description: "description",
         order_id: orderData.orderId,
         handler: async function (response) {
+          // console.log(response)
           const data = {
             orderCreationId: orderData.orderId,
             razorpayPaymentId: response.razorpay_payment_id,

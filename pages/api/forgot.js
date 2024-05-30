@@ -7,8 +7,8 @@ var CryptoJS = require("crypto-js");
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   auth: {
-    user: "mirza_shah@ndiit.org",
-    pass: "pdpwalaqmgoacsrk",
+    user: process.env.EMAIL_SENDER,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 

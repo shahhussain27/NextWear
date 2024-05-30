@@ -71,6 +71,7 @@ const handler = async (req, res) => {
     }
 
     const order = await razorpay.orders.create(options);
+    // console.log(order)
 
     let newOrder = new Order({
       namd: req.body.name,
