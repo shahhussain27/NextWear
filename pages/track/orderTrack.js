@@ -62,7 +62,7 @@ const TrackOrder = ({ order }) => {
         <div className="mt-6 sm:mt-8 lg:flex lg:gap-8">
           <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200  lg:max-w-xl xl:max-w-2xl">
             {Object.values(order.products).map((item, index) => (
-              <div className="space-y-4 p-6">
+              <div className="space-y-4 p-6" key={index}>
                 <div className="flex items-center gap-6">
                   <a className="h-14 w-14 shrink-0">
                     <Image
