@@ -26,6 +26,9 @@ const Mugs = () => {
                 />
               </a>
               <div className="mt-4">
+                <h2 className="flex justify-between text-black title-font text-lg font-medium">
+                  {mugs[item].title}
+                </h2>
                 <h3 className=" text-gray-500 text-xs tracking-widest title-font mb-1">
                   Mugs
                 </h3>

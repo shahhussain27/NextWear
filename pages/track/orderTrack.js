@@ -11,9 +11,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "30%",
   bgcolor: "background.paper",
-
   p: 4,
 };
 
@@ -261,7 +259,7 @@ const TrackOrder = ({ order }) => {
         </div>
       </div>
       <Modal open={open} onClose={handleClose}>
-        <div style={style}>
+        <div style={style} className="w-full md:w-2/4">
           <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-md">
             <div className="text-xl text-center font-semibold text-gray-800">
               Are you sure you want to cancel this order?

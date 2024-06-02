@@ -55,14 +55,19 @@ const AllOrders = ({ orders }) => {
 
   return (
     <>
-      <BaseCard title="All Orders">
+      <BaseCard
+        title="All Orders"
+        sx={{
+          overflowX: "scroll",
+        }}
+      >
         <Table
           aria-label="simple table"
           sx={{
             mt: 3,
             whiteSpace: "nowrap",
+            overflowX: "scroll",
           }}
-          className="overflow-x-scroll"
         >
           <TableHead>
             <TableRow>

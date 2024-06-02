@@ -147,13 +147,18 @@ const Orders = () => {
                   <div className="w-full px-6 flex flex-col lg:flex-row items-center justify-between">
                     <div className="flex flex-col sm:flex-row items-center max-lg:border-b border-gray-200">
                       {orders[item].status === "Pending" && (
-                        <p className="font-bold bg-rose-500 text-white py-1.5 px-2 rounded-full">
+                        <p className="font-bold bg-rose-500 text-white py-1.5 px-2 rounded-full m-2">
                           Payment Failed
                         </p>
                       )}
                       {orders[item].status === "Paid" && (
-                        <p className="font-bold bg-yellow-400 text-white py-1.5 px-2 rounded-full">
+                        <p className="font-bold bg-yellow-400 text-white py-1.5 px-2 rounded-full m-2">
                           Payment Successful
+                        </p>
+                      )}
+                      {orders[item].status === "Cancel" && (
+                        <p className="font-bold bg-blue-400 text-white py-1.5 px-2 rounded-full m-2">
+                          Order Cancelled
                         </p>
                       )}
                     </div>

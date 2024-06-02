@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { CiShoppingCart, CiUser } from "react-icons/ci";
@@ -15,6 +15,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/dropdown";
+import { ProductContext } from "@/context/ProductContext";
 
 const Navbar = ({
   cart,
@@ -26,13 +27,19 @@ const Navbar = ({
   key,
   logout,
 }) => {
+
   const [isOpen, setIsOpen] = React.useState(false);
   const [isShow, setIsShow] = React.useState(true);
+ 
+
+ 
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
 
   const router = useRouter();
+
+
 
   useEffect(() => {
     Object.keys(cart).length !== 0 && setIsOpen(true);
@@ -71,6 +78,8 @@ const Navbar = ({
             <span className="ml-3 text-xl">NextWear</span>
           </Link>
           <nav className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base text-black justify-center gap-4">
+           
+
             <Link href={"/tshirts"}>T-Shirts</Link>
             <Link href={"/hoodies"}>Hoodies</Link>
             <Link href={"/stickers"}>Stickers</Link>
@@ -166,7 +175,7 @@ const Navbar = ({
             open={isOpen}
             onClose={toggleDrawer}
             direction="right"
-            size={400}
+            size={350}
             className="p-4 text-black overflow-y-scroll"
           >
             <>

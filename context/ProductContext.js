@@ -11,6 +11,7 @@ const ProductProvider = ({ children }) => {
   const [stickers, setStickers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [myorders, setMyOrders] = useState([]);
+  const [results, setResults] = useState([]);
 
   const router = useRouter();
 
@@ -252,10 +253,10 @@ const ProductProvider = ({ children }) => {
       const json = await response.json();
       if (json.status === "success") {
         notify("Order Cancel Successfull", "success");
-        const newOrders = orders.filter((order) => {
-          return order._id !== id;
-        });
-        setOrders(newOrders);
+        // const newOrders = orders.filter((order) => {
+        //   return order._id !== id;
+        // });
+        // setOrders(newOrders);
       }
     } catch (error) {
       console.error(error);
@@ -309,7 +310,27 @@ const ProductProvider = ({ children }) => {
     }
   };
 
-  // console.log(user)
+  const searchResults = async (query) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/search?query=${encodeURIComponent(
+          query
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const searchData = await response.json();
+      setResults(searchData);
+      return searchData;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     fetchProduct();
@@ -331,6 +352,8 @@ const ProductProvider = ({ children }) => {
         myorders,
         cancelOrder,
         addProducts,
+        searchResults,
+        results,
       }}
     >
       {children}

@@ -11,7 +11,7 @@ import {
 
 const BaseCard = (props) => {
   return (
-    <Card>
+    <Card sx={{overflowX: "scroll"}}>
       <Box p={2} display="flex" alignItems="center">
         <Typography variant="h4">{props.title}</Typography>
       </Box>

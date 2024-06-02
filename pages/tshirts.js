@@ -5,7 +5,7 @@ import { ProductContext } from "../context/ProductContext";
 
 const Tshirts = () => {
   const { tshirt } = useContext(ProductContext);
-  // console.log(product);
+  // console.log(tshirt);
 
   return (
     <section className="text-gray-600 body-font">
