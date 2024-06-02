@@ -54,11 +54,11 @@ export default function Home() {
                   <p></p>
                 ) : (
                   productKeys.map((item, index) => (
-                    <Link href={`/product/${results.results[item].slug}`}>
-                      <div
-                        key={index}
-                        className="flex gap-4 p-2 bg-white hover:bg-gray-50 cursor-pointer"
-                      >
+                    <Link
+                      href={`/product/${results.results[item].slug}`}
+                      key={index}
+                    >
+                      <div className="flex gap-4 p-2 bg-white hover:bg-gray-50 cursor-pointer">
                         <Image
                           src={results.results[item].img}
                           alt={results.results[item].title}
