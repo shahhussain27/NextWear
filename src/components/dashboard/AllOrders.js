@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Box,
@@ -14,15 +14,17 @@ import {
 import Image from "next/image";
 import BaseCard from "../baseCard/BaseCard";
 import Modal from "@mui/material/Modal";
+import QRCode from "qrcode";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "50%",
+  width: "70%",
+  height: "50dvh",
   bgcolor: "background.paper",
-
+  overflowX: "scroll",
   p: 4,
 };
 
@@ -30,7 +32,11 @@ const AllOrders = ({ orders }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [info, setInfo] = useState([]);
+  const [qrData, setQrData] = useState({});
+  const [src, setSrc] = useState("");
   const [open, setOpen] = React.useState(false);
+  const [openQR, setOpenQR] = React.useState(false);
+
   const handleOpen = (email, phone, address, state, city, pincode) => {
     setInfo([email, phone, address, state, city, pincode]);
     setOpen(true);
@@ -52,6 +58,23 @@ const AllOrders = ({ orders }) => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  useEffect(() => {
+    if (qrData) {
+      const jsonString = JSON.stringify(qrData);
+      QRCode.toDataURL(
+        jsonString,
+        { errorCorrectionLevel: "H" },
+        (err, url) => {
+          if (err) {
+            console.error(err);
+          } else {
+            setSrc(url);
+          }
+        }
+      );
+    }
+  }, [qrData]);
 
   return (
     <>
@@ -108,7 +131,7 @@ const AllOrders = ({ orders }) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="h6">
-                  Action
+                  Fulfill Order
                 </Typography>
               </TableCell>
             </TableRow>
@@ -191,8 +214,14 @@ const AllOrders = ({ orders }) => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="h6">
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded">
-                        Fulfill Order
+                      <button
+                        onClick={() => {
+                          setOpenQR(true);
+                          setQrData(order);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded"
+                      >
+                        QR Code
                       </button>
                     </Typography>
                   </TableCell>
@@ -303,6 +332,7 @@ const AllOrders = ({ orders }) => {
           />
         </Box>
       </BaseCard>
+      {/* Customer Details */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -316,7 +346,6 @@ const AllOrders = ({ orders }) => {
               mt: 3,
               whiteSpace: "nowrap",
             }}
-            className="overflow-x-scroll"
           >
             <TableHead>
               <TableRow>
@@ -398,6 +427,27 @@ const AllOrders = ({ orders }) => {
               </React.Fragment>
             </TableBody>
           </Table>
+        </Box>
+      </Modal>
+
+      {/* QR CODE */}
+      <Modal
+        open={openQR}
+        onClose={() => {
+          setOpenQR(false);
+        }}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          {" "}
+          <div className="flex justify-center items-center">
+            {src ? (
+              <Image src={src} alt="QR Code" width={300} height={300} />
+            ) : (
+              <p>Loading...</p>
+            )}
+          </div>
         </Box>
       </Modal>
     </>
