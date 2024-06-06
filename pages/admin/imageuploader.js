@@ -3,6 +3,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../src/theme/theme";
 import { Grid, ImageList, ImageListItem } from "@mui/material";
 import BaseCard from "../../src/components/baseCard/BaseCard";
+import Image from "next/image";
 
 function srcset(image, size, rows = 1, cols = 1) {
   return {
@@ -72,10 +73,12 @@ const Imageuploader = () => {
                     cols={item.cols || 1}
                     rows={item.rows || 1}
                   >
-                    <img
+                    <Image
                       {...srcset(item.img, 121, item.rows, item.cols)}
                       alt={item.title}
                       loading="lazy"
+                      height={100}
+                      width={100}
                     />
                   </ImageListItem>
                 ))}
