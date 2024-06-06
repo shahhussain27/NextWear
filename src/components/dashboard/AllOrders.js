@@ -443,7 +443,10 @@ const AllOrders = ({ orders }) => {
           {" "}
           <div className="flex justify-center items-center">
             {src ? (
+              <div className="flex flex-col justify-center items-center gap-2">
+              <h2 className="font-bold">Scan the QR code from NextWear App</h2>
               <Image src={src} alt="QR Code" width={300} height={300} />
+              </div>
             ) : (
               <p>Loading...</p>
             )}
