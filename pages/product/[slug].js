@@ -368,14 +368,26 @@ export default function Page({ addToCart, product, variants, buyNow, error }) {
   );
 }
 
+const connectToDatabase = async () => {
+  if (!mongoose.connections[0].readyState) {
+    await mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  }
+};
+
 export async function getServerSideProps(context) {
   let error = null;
-  if (mongoose.connections[0].readyState) {
-    await mongoose.connect(process.env.MONGO_URL);
-  }
+  await connectToDatabase();
+
+  // if (mongoose.connections[0].readyState) {
+  //   await mongoose.connect(process.env.MONGO_URL);
+  // }
 
   let product = await Products.findOne({ slug: context.query.slug });
-  if (product == null) {
+  if (!product) {
+    // pre: product == null
     return {
       props: {
         error: 404,
@@ -387,13 +399,20 @@ export async function getServerSideProps(context) {
     category: product.category,
   });
   let colorSizeSlug = {};
-  for (let item of variants) {
-    if (Object.keys(colorSizeSlug).includes(item.color)) {
-      colorSizeSlug[item.color][item.size] = { slug: item.slug };
-    } else {
+  // for (let item of variants) {
+  //   if (Object.keys(colorSizeSlug).includes(item.color)) {
+  //     colorSizeSlug[item.color][item.size] = { slug: item.slug };
+  //   } else {
+  //     colorSizeSlug[item.color] = {};
+  //     colorSizeSlug[item.color][item.size] = { slug: item.slug };
+  //   }
+  // }
+  for (let i = 0; i < variants.length; i++) {
+    let item = variants[i];
+    if (!colorSizeSlug[item.color]) {
       colorSizeSlug[item.color] = {};
-      colorSizeSlug[item.color][item.size] = { slug: item.slug };
     }
+    colorSizeSlug[item.color][item.size] = { slug: item.slug };
   }
 
   return {
